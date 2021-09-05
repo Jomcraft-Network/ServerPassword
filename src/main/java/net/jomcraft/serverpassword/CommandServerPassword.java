@@ -1,6 +1,6 @@
 /* 
- *      NoItemDespawn - 1.16.5 <> Idea and codedesign by PT400C - Command class
- *      © Jomcraft Network 2021
+ *      ServerPassword - 1.16.5 <> Codedesign by PT400C and Compaszer
+ *      © Jomcraft-Network 2021
  */
 package net.jomcraft.serverpassword;
 

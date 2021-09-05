@@ -1,6 +1,6 @@
 /* 
- *      ServerPassword - 1.12.2 <> Codedesign by PT400C; Supported by julKoeln and PT400C - ECKey Enum
- *      © Jomcraft-Network 2018
+ *      ServerPassword - 1.16.5 <> Codedesign by PT400C and Compaszer
+ *      © Jomcraft-Network 2021
  */
 package net.jomcraft.serverpassword;
 

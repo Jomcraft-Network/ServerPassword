@@ -1,0 +1,26 @@
+modLoader="javafml"
+loaderVersion="[36,)"
+license="Apache License 2.0"
+
+[[mods]] 
+	modId="serverpassword" 
+	version="${version}" 
+	displayName="ServerPassword"
+	description='''Securely login to a minecraft server using your password!'''
+	side="SERVER"
+	authors="PT400C - Jomcraft Network"
+	credits="Developed by Jomcraft Network"
+
+[[dependencies.serverpassword]]
+    modId="forge"
+    mandatory=true
+    versionRange="[${forge_version},)"
+    ordering="NONE"
+    side="BOTH"
+    
+[[dependencies.serverpassword]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[1.16,]"
+    ordering="NONE"
+    side="BOTH"

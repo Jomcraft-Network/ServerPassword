@@ -1,0 +1,163 @@
+buildscript {
+    repositories {
+        maven { url = 'https://maven.minecraftforge.net' }
+        mavenCentral()
+		maven { url = 'https://repo.spongepowered.org/maven' }
+        jcenter()
+    }
+    dependencies {
+        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '4.1.+', changing: true
+		classpath 'org.spongepowered:mixingradle:0.7-SNAPSHOT'
+    }
+}
+
+apply plugin: 'net.minecraftforge.gradle'
+apply plugin: 'org.spongepowered.mixin'
+apply plugin: 'eclipse'
+
+version = "1.16.x-1.0.2"
+
+def fileVersion = "1.0.2"
+group = "net.jomcraft.serverpassword"
+
+archivesBaseName = "ServerPassword"
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(8)
+
+minecraft {
+    mappings channel: 'official', version: '1.16.5'
+
+	runs {
+        client {
+            workingDirectory project.file('run')
+
+            property 'forge.logging.markers', 'REGISTRIES'
+
+            property 'forge.logging.console.level', 'debug'
+			
+			property 'mixin.env.refMapRemappingFile', "${project.projectDir}/build/createSrgToMcp/output.srg"
+            
+            arg "-mixin.config="+"serverpassword.mixin.json"
+
+            mods {
+                serverpassword {
+                    source sourceSets.main
+                }
+            }
+        }
+
+        server {
+            workingDirectory project.file('run')
+
+            property 'forge.logging.markers', 'REGISTRIES'
+
+            property 'forge.logging.console.level', 'debug'
+
+			properties 'mixin.env.remapRefMap': 'true'
+			
+            property 'mixin.env.refMapRemappingFile', "${project.projectDir}/build/createSrgToMcp/output.srg"
+            
+            arg "-mixin.config="+"serverpassword.mixin.json"
+
+            mods {
+                serverpassword {
+                    source sourceSets.main
+                }
+            }
+        }
+
+        data {
+            workingDirectory project.file('run')
+
+            property 'forge.logging.markers', 'REGISTRIES'
+
+            property 'forge.logging.console.level', 'debug'
+            
+            properties 'mixin.env.remapRefMap': 'true'
+            
+            property 'mixin.env.refMapRemappingFile', "${project.projectDir}/build/createSrgToMcp/output.srg"
+
+            args '--mod', 'serverpassword', '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
+
+            mods {
+                serverpassword {
+                    source sourceSets.main
+                }
+            }
+        }
+		accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
+    }
+}
+
+sourceSets.main.resources { srcDir 'src/generated/resources' }
+
+mixin {
+    add sourceSets.main, "serverpassword.refmap.json"
+}
+
+repositories {
+    maven {
+        url "https://www.cursemaven.com"
+        content {
+            includeGroup "curse.maven"
+        }
+    }
+}
+
+dependencies {
+    minecraft 'net.minecraftforge:forge:1.16.5-36.2.2'
+	annotationProcessor 'org.spongepowered:mixin:0.8.2:processor'
+	testAnnotationProcessor 'org.spongepowered:mixin:0.8.2:processor'
+}
+
+def forge_version = "36.2.2"
+
+processResources {
+
+	duplicatesStrategy = 'include'
+
+    from(sourceSets.main.resources.srcDirs) {
+        include 'META-INF/mods.toml'
+
+        expand 'version': fileVersion, 'forge_version': forge_version
+    }
+
+    from(sourceSets.main.resources.srcDirs) {
+        exclude 'META-INF/mods.toml'
+    }
+}
+
+jar {
+    
+	manifest {
+		attributes([
+			"Specification-Title": "PreGen-Protect",
+			"Specification-Vendor": "Jomcraft Network",
+			"Specification-Version": fileVersion,
+			"Implementation-Title": "PreGen-Protect",
+			"Implementation-Version": fileVersion,
+			"Implementation-Vendor" : "Jomcraft Network",
+			"Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
+            "MixinConfigs" : "serverpassword.mixin.json"
+		])
+	}
+
+}
+
+task sourcesJar(type: Jar) {
+	
+	from sourceSets.main.allSource
+	classifier = 'sources'
+}
+
+task deobfJar(type: Jar) {
+	
+	from sourceSets.main.output
+	classifier = 'deobf'
+}
+
+artifacts {
+	archives jar
+	archives sourcesJar
+	archives deobfJar
+}

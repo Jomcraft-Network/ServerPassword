@@ -1,5 +1,5 @@
 /* 
- *      ServerPassword - 1.16.5 <> Codedesign by PT400C and Compaszer
+ *      ServerPassword - 1.17.x <> Codedesign by PT400C and Compaszer
  *      © Jomcraft-Network 2021
  */
 package net.jomcraft.serverpassword.mixin;
@@ -12,21 +12,22 @@ import javax.annotation.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
+import com.google.common.collect.Lists;
 import com.mojang.authlib.GameProfile;
 import net.jomcraft.serverpassword.ConfigManager;
 import net.jomcraft.serverpassword.ServerEvents;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.server.management.BanList;
-import net.minecraft.server.management.IPBanEntry;
-import net.minecraft.server.management.IPBanList;
-import net.minecraft.server.management.PlayerList;
-import net.minecraft.server.management.ProfileBanEntry;
-import net.minecraft.server.management.WhiteList;
-import net.minecraft.util.text.IFormattableTextComponent;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraftforge.fml.server.ServerLifecycleHooks;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.players.IpBanList;
+import net.minecraft.server.players.IpBanListEntry;
+import net.minecraft.server.players.PlayerList;
+import net.minecraft.server.players.UserBanList;
+import net.minecraft.server.players.UserBanListEntry;
+import net.minecraft.server.players.UserWhiteList;
+import net.minecraftforge.fmllegacy.server.ServerLifecycleHooks;
 
 @Mixin({ PlayerList.class })
 public abstract class MixinPlayerList {
@@ -39,16 +40,16 @@ public abstract class MixinPlayerList {
 	public static File WHITELIST_FILE;
 
 	@Shadow
-	private List<ServerPlayerEntity> players;
+	private List<ServerPlayer> players = Lists.newArrayList();
 
 	@Shadow
-	private BanList bans;
+	private UserBanList bans;
 
 	@Shadow
-	private IPBanList ipBans;
+	private IpBanList ipBans;
 
 	@Shadow
-	private WhiteList whitelist;
+	private UserWhiteList whitelist;
 
 	@Shadow
 	protected int maxPlayers;
@@ -58,57 +59,56 @@ public abstract class MixinPlayerList {
 
 	@Overwrite
 	@Nullable
-	public ITextComponent canPlayerLogin(SocketAddress p_206258_1_, GameProfile p_206258_2_) {
-
-		if (this.bans.isBanned(p_206258_2_)) {
-			ServerEvents.allowed.remove(p_206258_2_.getId().toString());
-			ProfileBanEntry profilebanentry = this.bans.get(p_206258_2_);
-			IFormattableTextComponent iformattabletextcomponent1 = new TranslationTextComponent("multiplayer.disconnect.banned.reason", profilebanentry.getReason());
-			if (profilebanentry.getExpires() != null) {
-				iformattabletextcomponent1.append(new TranslationTextComponent("multiplayer.disconnect.banned.expiration", BAN_DATE_FORMAT.format(profilebanentry.getExpires())));
+	public Component canPlayerLogin(SocketAddress p_11257_, GameProfile p_11258_) {
+		if (this.bans.isBanned(p_11258_)) {
+			ServerEvents.allowed.remove(p_11258_.getId().toString());
+			UserBanListEntry userbanlistentry = this.bans.get(p_11258_);
+			MutableComponent mutablecomponent1 = new TranslatableComponent("multiplayer.disconnect.banned.reason", userbanlistentry.getReason());
+			if (userbanlistentry.getExpires() != null) {
+				mutablecomponent1.append(new TranslatableComponent("multiplayer.disconnect.banned.expiration", BAN_DATE_FORMAT.format(userbanlistentry.getExpires())));
 			}
 
-			return iformattabletextcomponent1;
-		} else if (!this.isWhiteListed(p_206258_2_)) {
-			ServerEvents.allowed.remove(p_206258_2_.getId().toString());
-			return new TranslationTextComponent("multiplayer.disconnect.not_whitelisted");
-		} else if (this.ipBans.isBanned(p_206258_1_)) {
-			ServerEvents.allowed.remove(p_206258_2_.getId().toString());
-			IPBanEntry ipbanentry = this.ipBans.get(p_206258_1_);
-			IFormattableTextComponent iformattabletextcomponent = new TranslationTextComponent("multiplayer.disconnect.banned_ip.reason", ipbanentry.getReason());
-			if (ipbanentry.getExpires() != null) {
-				iformattabletextcomponent.append(new TranslationTextComponent("multiplayer.disconnect.banned_ip.expiration", BAN_DATE_FORMAT.format(ipbanentry.getExpires())));
+			return mutablecomponent1;
+		} else if (!this.isWhiteListed(p_11258_)) {
+			ServerEvents.allowed.remove(p_11258_.getId().toString());
+			return new TranslatableComponent("multiplayer.disconnect.not_whitelisted");
+		} else if (this.ipBans.isBanned(p_11257_)) {
+			ServerEvents.allowed.remove(p_11258_.getId().toString());
+			IpBanListEntry ipbanlistentry = this.ipBans.get(p_11257_);
+			MutableComponent mutablecomponent = new TranslatableComponent("multiplayer.disconnect.banned_ip.reason", ipbanlistentry.getReason());
+			if (ipbanlistentry.getExpires() != null) {
+				mutablecomponent.append(new TranslatableComponent("multiplayer.disconnect.banned_ip.expiration", BAN_DATE_FORMAT.format(ipbanlistentry.getExpires())));
 			}
 
-			return iformattabletextcomponent;
+			return mutablecomponent;
 		} else if (ServerLifecycleHooks.getCurrentServer().isDedicatedServer()) {
 			if (ConfigManager.SERVER.password.get().equals("")) {
 
-				return new StringTextComponent("\u00A7cKicked from the server!\n\n\u00A7bThe default password has to be changed by an admin!");
+				return new TextComponent("\u00A7cKicked from the server!\n\n\u00A7bThe default password has to be changed by an admin!");
 
-			} else if (!ServerEvents.allowed.contains(p_206258_2_.getId().toString())) {
+			} else if (!ServerEvents.allowed.contains(p_11258_.getId().toString())) {
 
-				if (ServerEvents.fast.contains(p_206258_1_.toString().split("/")[0])) {
-					ServerEvents.fast.remove(p_206258_1_.toString().split("/")[0]);
-					return new StringTextComponent("\u00A7cKicked from the server!\n\n\u00A7cThe request came to quickly!");
+				if (ServerEvents.fast.contains(p_11257_.toString().split("/")[0])) {
+					ServerEvents.fast.remove(p_11257_.toString().split("/")[0]);
+					return new TextComponent("\u00A7cKicked from the server!\n\n\u00A7cThe request came to quickly!");
 
 				} else {
 
-					if (ServerEvents.permit.contains(p_206258_2_.getId().toString())) {
-						ServerEvents.permit.remove(p_206258_2_.getId().toString());
-						return new StringTextComponent("\u00A7cKicked from the server!\n\n\u00A7cThe server denied your request: \nYou may not be permitted to join or entered an invalid password!");
+					if (ServerEvents.permit.contains(p_11258_.getId().toString())) {
+						ServerEvents.permit.remove(p_11258_.getId().toString());
+						return new TextComponent("\u00A7cKicked from the server!\n\n\u00A7cThe server denied your request: \nYou may not be permitted to join or entered an invalid password!");
 					} else {
 
-						return new StringTextComponent("\u00A7cKicked from the server!\n\n\u00A7cThe server denied your request: \nYou may not be permitted to join or entered an invalid password!");
+						return new TextComponent("\u00A7cKicked from the server!\n\n\u00A7cThe server denied your request: \nYou may not be permitted to join or entered an invalid password!");
 					}
 				}
 
 			} else {
-				ServerEvents.allowed.remove(p_206258_2_.getId().toString());
-				return this.players.size() >= this.maxPlayers && !this.canBypassPlayerLimit(p_206258_2_) ? new TranslationTextComponent("multiplayer.disconnect.server_full") : null;
+				ServerEvents.allowed.remove(p_11258_.getId().toString());
+				return this.players.size() >= this.maxPlayers && !this.canBypassPlayerLimit(p_11258_) ? new TranslatableComponent("multiplayer.disconnect.server_full") : null;
 			}
 		} else {
-			return this.players.size() >= this.maxPlayers && !this.canBypassPlayerLimit(p_206258_2_) ? new TranslationTextComponent("multiplayer.disconnect.server_full") : null;
+			return this.players.size() >= this.maxPlayers && !this.canBypassPlayerLimit(p_11258_) ? new TranslatableComponent("multiplayer.disconnect.server_full") : null;
 		}
 	}
 

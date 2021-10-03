@@ -1,5 +1,5 @@
 /* 
- *      ServerPassword - 1.16.5 <> Codedesign by PT400C and Compaszer
+ *      ServerPassword - 1.17.x <> Codedesign by PT400C and Compaszer
  *      © Jomcraft-Network 2021
  */
 package net.jomcraft.serverpassword;
@@ -31,7 +31,7 @@ public class ServerPassword {
 	public static final String MODID = "serverpassword";
 	public static final Logger log = LogManager.getLogger(ServerPassword.MODID);
 	private static EncryptPatch ec;
-	public static final String VERSION = "1.0.0";
+	public static final String VERSION = getModVersion();
 	public static ServerPassword instance;
 	public static HashMap<String, String> passwords = new HashMap<>();
 	public static volatile int port = 0;

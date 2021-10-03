@@ -1,5 +1,5 @@
 /* 
- *      ServerPassword - 1.16.5 <> Codedesign by PT400C and Compaszer
+ *      ServerPassword - 1.17.x <> Codedesign by PT400C and Compaszer
  *      © Jomcraft-Network 2021
  */
 package net.jomcraft.serverpassword;
@@ -10,16 +10,16 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.LiteralCommandNode;
-import net.minecraft.command.CommandSource;
-import net.minecraft.command.Commands;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
+import net.minecraft.ChatFormatting;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.Commands;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraftforge.fmlserverevents.FMLServerStartingEvent;
 
 public class CommandServerPassword {
 
 	protected static void register(FMLServerStartingEvent event) {
-		LiteralArgumentBuilder<CommandSource> literalargumentbuilder = Commands.literal("serverpassword");
+		LiteralArgumentBuilder<CommandSourceStack> literalargumentbuilder = Commands.literal("serverpassword");
 
 		literalargumentbuilder.then(Commands.literal("set").executes((command) -> {
 			return countRange(command.getSource(), "");
@@ -27,15 +27,15 @@ public class CommandServerPassword {
 			return countRange(command.getSource(), StringArgumentType.getString(command, "password"));
 		})));
 
-		LiteralCommandNode<CommandSource> node = event.getServer().getCommands().getDispatcher().register(literalargumentbuilder);
+		LiteralCommandNode<CommandSourceStack> node = event.getServer().getCommands().getDispatcher().register(literalargumentbuilder);
 
 		event.getServer().getCommands().getDispatcher().register(Commands.literal("serverpw").redirect(node));
 	}
 
-	private static int countRange(CommandSource source, String password) throws CommandSyntaxException {
+	private static int countRange(CommandSourceStack source, String password) throws CommandSyntaxException {
 
 		if (password.isEmpty()) {
-			source.sendFailure(new StringTextComponent(TextFormatting.RED + "The password can't be empty!"));
+			source.sendFailure(new TextComponent(ChatFormatting.RED + "The password can't be empty!"));
 			return 0;
 		}
 
@@ -49,7 +49,7 @@ public class CommandServerPassword {
 		ConfigManager.SERVER.password.set(pw);
 		ConfigManager.SERVER.password.save();
 
-		source.sendSuccess(new StringTextComponent(TextFormatting.AQUA + "The new password has been set!"), true);
+		source.sendSuccess(new TextComponent(ChatFormatting.AQUA + "The new password has been set!"), true);
 
 		return 1;
 

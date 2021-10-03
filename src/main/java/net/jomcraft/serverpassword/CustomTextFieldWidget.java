@@ -1,27 +1,27 @@
 /* 
- *      ServerPassword - 1.16.5 <> Codedesign by PT400C and Compaszer
+ *      ServerPassword - 1.17.x <> Codedesign by PT400C and Compaszer
  *      © Jomcraft-Network 2021
  */
 package net.jomcraft.serverpassword;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import net.minecraft.client.gui.AbstractGui;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.IGuiEventListener;
-import net.minecraft.client.gui.IRenderable;
-import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.util.text.ITextComponent;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.components.Widget;
+import net.minecraft.client.gui.components.events.GuiEventListener;
+import net.minecraft.network.chat.Component;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
-public class CustomTextFieldWidget extends TextFieldWidget implements IRenderable, IGuiEventListener {
+public class CustomTextFieldWidget extends EditBox implements Widget, GuiEventListener {
 
-	public CustomTextFieldWidget(FontRenderer p_i232260_1_, int p_i232260_2_, int p_i232260_3_, int p_i232260_4_, int p_i232260_5_, ITextComponent p_i232260_6_) {
+	public CustomTextFieldWidget(Font p_i232260_1_, int p_i232260_2_, int p_i232260_3_, int p_i232260_4_, int p_i232260_5_, Component p_i232260_6_) {
 		super(p_i232260_1_, p_i232260_2_, p_i232260_3_, p_i232260_4_, p_i232260_5_, p_i232260_6_);
 	}
 
-	public void renderButton(MatrixStack p_230431_1_, int p_230431_2_, int p_230431_3_, float p_230431_4_) {
+	public void renderButton(PoseStack p_230431_1_, int p_230431_2_, int p_230431_3_, float p_230431_4_) {
 		if (this.isVisible()) {
 			if (this.isBordered()) {
 				int i = this.isFocused() ? -1 : -6250336;
@@ -29,7 +29,7 @@ public class CustomTextFieldWidget extends TextFieldWidget implements IRenderabl
 				fill(p_230431_1_, this.x, this.y, this.x + this.width, this.y + this.height, -16777216);
 			}
 
-			int i2 = this.isEditable() ? this.textColor : this.textColorUneditable;
+			int i2 = this.isEditable ? this.textColor : this.textColorUneditable;
 			int j = this.cursorPos - this.displayPos;
 			int k = this.highlightPos - this.displayPos;
 
@@ -69,7 +69,7 @@ public class CustomTextFieldWidget extends TextFieldWidget implements IRenderabl
 
 			if (flag1) {
 				if (flag2) {
-					AbstractGui.fill(p_230431_1_, k1, i1 - 1, k1 + 1, i1 + 1 + 9, -3092272);
+					GuiComponent.fill(p_230431_1_, k1, i1 - 1, k1 + 1, i1 + 1 + 9, -3092272);
 				} else {
 					this.font.drawShadow(p_230431_1_, "_", (float) k1, (float) i1, i2);
 				}

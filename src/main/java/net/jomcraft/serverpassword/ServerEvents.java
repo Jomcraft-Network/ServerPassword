@@ -1,5 +1,5 @@
 /* 
- *      ServerPassword - 1.16.5 <> Codedesign by PT400C and Compaszer
+ *      ServerPassword - 1.17.x <> Codedesign by PT400C and Compaszer
  *      © Jomcraft-Network 2021
  */
 package net.jomcraft.serverpassword;
@@ -7,15 +7,13 @@ package net.jomcraft.serverpassword;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-
 import org.apache.logging.log4j.Level;
-
 import net.minecraft.server.dedicated.DedicatedServer;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.server.FMLServerAboutToStartEvent;
-import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
-import net.minecraftforge.fml.event.server.FMLServerStoppingEvent;
+import net.minecraftforge.fmlserverevents.FMLServerAboutToStartEvent;
+import net.minecraftforge.fmlserverevents.FMLServerStartingEvent;
+import net.minecraftforge.fmlserverevents.FMLServerStoppingEvent;
 
 @Mod.EventBusSubscriber(modid = ServerPassword.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class ServerEvents {

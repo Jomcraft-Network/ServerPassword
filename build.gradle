@@ -6,7 +6,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '4.1.+', changing: true
+        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
 		classpath 'org.spongepowered:mixingradle:0.7-SNAPSHOT'
     }
 }
@@ -15,17 +15,17 @@ apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'org.spongepowered.mixin'
 apply plugin: 'eclipse'
 
-version = "1.16.x-1.0.2"
+version = "1.17.x-1.0.2"
 
 def fileVersion = "1.0.2"
 group = "net.jomcraft.serverpassword"
 
 archivesBaseName = "ServerPassword"
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(8)
+java.toolchain.languageVersion = JavaLanguageVersion.of(16)
 
 minecraft {
-    mappings channel: 'official', version: '1.16.5'
+    mappings channel: 'official', version: '1.17.1'
 
 	runs {
         client {
@@ -95,19 +95,10 @@ mixin {
     add sourceSets.main, "serverpassword.refmap.json"
 }
 
-repositories {
-    maven {
-        url "https://www.cursemaven.com"
-        content {
-            includeGroup "curse.maven"
-        }
-    }
-}
-
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.16.5-36.2.2'
-	annotationProcessor 'org.spongepowered:mixin:0.8.2:processor'
-	testAnnotationProcessor 'org.spongepowered:mixin:0.8.2:processor'
+    minecraft 'net.minecraftforge:forge:1.17.1-37.0.59'
+	annotationProcessor 'org.spongepowered:mixin:0.8.4:processor'
+	testAnnotationProcessor 'org.spongepowered:mixin:0.8.4:processor'
 }
 
 def forge_version = "36.2.2"
@@ -160,4 +151,28 @@ artifacts {
 	archives jar
 	archives sourcesJar
 	archives deobfJar
+}
+
+curseforge {
+	if(System.getenv("CURSE_API") != null && !System.getenv("CURSE_API").equals("")) {
+		apiKey = System.getenv("CURSE_API")
+		project {
+			id = '296938'
+			releaseType = 'beta'
+			addGameVersion '1.17.1'
+			mainArtifact(jar) {
+				displayName = "$archivesBaseName-$version"
+			}
+    
+			addArtifact (sourcesJar) {
+				releaseType = 'beta'
+				displayName = "$archivesBaseName-$version-sources"
+			}
+    
+			addArtifact (deobfJar) {
+				releaseType = 'beta'
+				displayName = "$archivesBaseName-$version-deobf"
+			}
+		}
+	}
 }

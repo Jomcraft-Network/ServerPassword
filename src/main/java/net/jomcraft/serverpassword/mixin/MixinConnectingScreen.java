@@ -1,11 +1,11 @@
 /* 
- *      ServerPassword - 1.16.5 <> Codedesign by PT400C and Compaszer
+ *      ServerPassword - 1.17.x <> Codedesign by PT400C and Compaszer
  *      © Jomcraft-Network 2021
  */
 package net.jomcraft.serverpassword.mixin;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
+import java.net.InetSocketAddress;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -17,24 +17,27 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import net.jomcraft.serverpassword.ServerPassword;
 import net.jomcraft.serverpassword.EncryptPatch;
 import net.jomcraft.serverpassword.GuiPassword;
+import net.minecraft.DefaultUncaughtExceptionHandler;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.DialogTexts;
-import net.minecraft.client.gui.screen.ConnectingScreen;
-import net.minecraft.client.gui.screen.DisconnectedScreen;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.network.login.ClientLoginNetHandler;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.ProtocolType;
-import net.minecraft.network.handshake.client.CHandshakePacket;
-import net.minecraft.network.login.client.CLoginStartPacket;
-import net.minecraft.util.DefaultUncaughtExceptionHandler;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.client.gui.screens.ConnectScreen;
+import net.minecraft.client.gui.screens.DisconnectedScreen;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.multiplayer.ClientHandshakePacketListenerImpl;
+import net.minecraft.client.multiplayer.resolver.ResolvedServerAddress;
+import net.minecraft.client.multiplayer.resolver.ServerAddress;
+import net.minecraft.client.multiplayer.resolver.ServerNameResolver;
+import net.minecraft.network.Connection;
+import net.minecraft.network.ConnectionProtocol;
+import net.minecraft.network.chat.CommonComponents;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.protocol.handshake.ClientIntentionPacket;
+import net.minecraft.network.protocol.login.ServerboundHelloPacket;
 
-@Mixin({ ConnectingScreen.class })
+@Mixin({ ConnectScreen.class })
 public abstract class MixinConnectingScreen {
 
-	public InetAddress inetaddress = null;
+	public InetSocketAddress inetaddress = null;
 
 	@Shadow
 	private static final Logger LOGGER = LogManager.getLogger();
@@ -46,69 +49,69 @@ public abstract class MixinConnectingScreen {
 	private boolean aborted;
 
 	@Shadow
-	private NetworkManager connection;
+	private Connection connection;
 
 	@Shadow
 	private final Screen parent = null;
 
 	@Shadow
-	private ITextComponent status = new TranslationTextComponent("connect.connecting");
+	private Component status = new TranslatableComponent("connect.connecting");
 
 	public String pw = null;
 
-	@Inject(at = @At("HEAD"), method = "connect(Ljava/lang/String;I)V", cancellable = true)
-	private void testStuff(final String p_146367_1_, final int p_146367_2_, CallbackInfo ci) {
-		LOGGER.info("Connecting to {}, {}", p_146367_1_, p_146367_2_);
-		ServerPassword.port = Integer.valueOf(p_146367_2_) + 512;
+	@Inject(at = @At("HEAD"), method = "connect(Lnet/minecraft/client/Minecraft;Lnet/minecraft/client/multiplayer/resolver/ServerAddress;)V", cancellable = true)
+	private void testStuff(final Minecraft p_169265_, final ServerAddress p_169266_, CallbackInfo ci) {
+		LOGGER.info("Connecting to {}, {}", p_169266_.getHost(), p_169266_.getPort());
+		ServerPassword.port = Integer.valueOf(p_169266_.getPort()) + 512;
 		int s = UNIQUE_THREAD_ID.incrementAndGet();
 		Thread thread = new Thread("Server Connector #" + s) {
 			public void run() {
-				Minecraft minecraft = Minecraft.getInstance();
+
 				try {
 					if (MixinConnectingScreen.this.aborted) {
 						return;
 					}
 
-					MixinConnectingScreen.this.inetaddress = InetAddress.getByName(p_146367_1_);
-					boolean password = EncryptPatch.connectToServer(p_146367_1_, (byte) 0, null);
-
-					if (password) {
-
-						if (ServerPassword.passwords.containsKey(p_146367_1_ + ":" + p_146367_2_)) {
-							MixinConnectingScreen.this.pw = ServerPassword.passwords.get(p_146367_1_ + ":" + p_146367_2_);
-						}
-
-						minecraft.execute(() -> {
-							minecraft.setScreen(new GuiPassword(parent, ((ConnectingScreen) (Object) MixinConnectingScreen.this), MixinConnectingScreen.this.inetaddress, p_146367_1_, p_146367_2_, s, MixinConnectingScreen.this.pw));
-						});
-
-					} else {
-
-						MixinConnectingScreen.this.connection = NetworkManager.connectToServer(inetaddress, p_146367_2_, minecraft.options.useNativeTransport());
-						MixinConnectingScreen.this.connection.setListener(new ClientLoginNetHandler(MixinConnectingScreen.this.connection, minecraft, MixinConnectingScreen.this.parent, (p_209549_1_) -> {
-							MixinConnectingScreen.this.status = p_209549_1_;
-						}));
-						MixinConnectingScreen.this.connection.send(new CHandshakePacket(p_146367_1_, p_146367_2_, ProtocolType.LOGIN));
-						MixinConnectingScreen.this.connection.send(new CLoginStartPacket(minecraft.getUser().getGameProfile()));
-					}
-				} catch (UnknownHostException unknownhostexception) {
+					Optional<InetSocketAddress> optional = ServerNameResolver.DEFAULT.resolveAddress(p_169266_).map(ResolvedServerAddress::asInetSocketAddress);
 					if (MixinConnectingScreen.this.aborted) {
 						return;
 					}
 
-					LOGGER.error("Couldn't connect to server", (Throwable) unknownhostexception);
-					minecraft.execute(() -> {
-						minecraft.setScreen(new DisconnectedScreen(MixinConnectingScreen.this.parent, DialogTexts.CONNECT_FAILED, new TranslationTextComponent("disconnect.genericReason", "Unknown host")));
-					});
+					if (!optional.isPresent()) {
+						p_169265_.execute(() -> {
+							p_169265_.setScreen(new DisconnectedScreen(MixinConnectingScreen.this.parent, CommonComponents.CONNECT_FAILED, ConnectScreen.UNKNOWN_HOST_MESSAGE));
+						});
+						return;
+					}
+
+					MixinConnectingScreen.this.inetaddress = optional.get();
+
+					boolean password = EncryptPatch.connectToServer(p_169266_.getHost(), (byte) 0, null);
+					if (password) {
+
+						if (ServerPassword.passwords.containsKey(p_169266_.getHost() + ":" + p_169266_.getPort())) {
+							MixinConnectingScreen.this.pw = ServerPassword.passwords.get(p_169266_.getHost() + ":" + p_169266_.getPort());
+						}
+
+						p_169265_.execute(() -> {
+							p_169265_.setScreen(new GuiPassword(parent, ((ConnectScreen) (Object) MixinConnectingScreen.this), MixinConnectingScreen.this.inetaddress, p_169266_.getHost(), p_169266_.getPort(), s, MixinConnectingScreen.this.pw));
+						});
+
+					} else {
+						MixinConnectingScreen.this.connection = Connection.connectToServer(inetaddress, p_169265_.options.useNativeTransport());
+						MixinConnectingScreen.this.connection.setListener(new ClientHandshakePacketListenerImpl(MixinConnectingScreen.this.connection, p_169265_, MixinConnectingScreen.this.parent, MixinConnectingScreen.this::updateStatus));
+						MixinConnectingScreen.this.connection.send(new ClientIntentionPacket(inetaddress.getHostName(), inetaddress.getPort(), ConnectionProtocol.LOGIN));
+						MixinConnectingScreen.this.connection.send(new ServerboundHelloPacket(p_169265_.getUser().getGameProfile()));
+					}
 				} catch (Exception exception) {
 					if (MixinConnectingScreen.this.aborted) {
 						return;
 					}
 
-					LOGGER.error("Couldn't connect to server", (Throwable) exception);
-					String s = inetaddress == null ? exception.toString() : exception.toString().replaceAll(inetaddress + ":" + p_146367_2_, "");
-					minecraft.execute(() -> {
-						minecraft.setScreen(new DisconnectedScreen(MixinConnectingScreen.this.parent, DialogTexts.CONNECT_FAILED, new TranslationTextComponent("disconnect.genericReason", s)));
+					MixinConnectingScreen.LOGGER.error("Couldn't connect to server", (Throwable) exception);
+					String s = inetaddress == null ? exception.toString() : exception.toString().replaceAll(inetaddress.getHostName() + ":" + inetaddress.getPort(), "");
+					p_169265_.execute(() -> {
+						p_169265_.setScreen(new DisconnectedScreen(MixinConnectingScreen.this.parent, CommonComponents.CONNECT_FAILED, new TranslatableComponent("disconnect.genericReason", s)));
 					});
 				}
 
@@ -118,4 +121,7 @@ public abstract class MixinConnectingScreen {
 		thread.start();
 		ci.cancel();
 	}
+
+	@Shadow
+	abstract void updateStatus(Component p_95718_);
 }

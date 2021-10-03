@@ -1,6 +1,12 @@
-name: Java CI
+name: Publish CI
 
-on: [push]
+on:
+  workflow_dispatch:
+    inputs:
+      type:
+        description: 'What type of task to run'
+        required: true
+        default: 'curseforge'
 
 jobs:
   build:
@@ -19,7 +25,9 @@ jobs:
       - name: Validate Gradle wrapper
         uses: gradle/wrapper-validation-action@v1
       - name: Build with Gradle
-        run: ./gradlew build
+        run: ./gradlew build curseforge
+        env:
+          CURSE_API: ${{ secrets.CURSE_API }}
       - uses: actions/upload-artifact@v2
         with:
           name: 'Prebuilt Artifacts'

@@ -1,5 +1,5 @@
 /* 
- *      ServerPassword - 1.17.x <> Codedesign by PT400C and Compaszer
+ *      ServerPassword - 1.18.x <> Codedesign by PT400C and Compaszer
  *      © Jomcraft-Network 2021
  */
 package net.jomcraft.serverpassword.mixin;
@@ -27,7 +27,7 @@ import net.minecraft.server.players.PlayerList;
 import net.minecraft.server.players.UserBanList;
 import net.minecraft.server.players.UserBanListEntry;
 import net.minecraft.server.players.UserWhiteList;
-import net.minecraftforge.fmllegacy.server.ServerLifecycleHooks;
+import net.minecraftforge.server.ServerLifecycleHooks;
 
 @Mixin({ PlayerList.class })
 public abstract class MixinPlayerList {

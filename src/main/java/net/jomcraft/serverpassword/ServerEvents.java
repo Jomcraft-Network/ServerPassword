@@ -1,5 +1,5 @@
 /* 
- *      ServerPassword - 1.17.x <> Codedesign by PT400C and Compaszer
+ *      ServerPassword - 1.18.x <> Codedesign by PT400C and Compaszer
  *      © Jomcraft-Network 2021
  */
 package net.jomcraft.serverpassword;
@@ -9,11 +9,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import org.apache.logging.log4j.Level;
 import net.minecraft.server.dedicated.DedicatedServer;
+import net.minecraftforge.event.server.ServerAboutToStartEvent;
+import net.minecraftforge.event.server.ServerStartingEvent;
+import net.minecraftforge.event.server.ServerStoppingEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fmlserverevents.FMLServerAboutToStartEvent;
-import net.minecraftforge.fmlserverevents.FMLServerStartingEvent;
-import net.minecraftforge.fmlserverevents.FMLServerStoppingEvent;
 
 @Mod.EventBusSubscriber(modid = ServerPassword.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class ServerEvents {
@@ -28,7 +28,7 @@ public class ServerEvents {
 
 	@SuppressWarnings("resource")
 	@SubscribeEvent
-	public static void preInit(FMLServerAboutToStartEvent event) {
+	public static void preInit(ServerAboutToStartEvent event) {
 		if (event.getServer() instanceof DedicatedServer) {
 			server_port = ((DedicatedServer) event.getServer()).getProperties().serverPort + 512;
 			ServerPassword.log.log(Level.INFO, "Initialized ServerPassword server-side!");
@@ -38,12 +38,12 @@ public class ServerEvents {
 	}
 
 	@SubscribeEvent
-	public static void serverStart(FMLServerStartingEvent event) {
+	public static void serverStart(ServerStartingEvent event) {
 		CommandServerPassword.register(event);
 	}
 
 	@SubscribeEvent
-	public static void preInit(FMLServerStoppingEvent event) {
+	public static void preInit(ServerStoppingEvent event) {
 
 		try {
 			if (controller != null)

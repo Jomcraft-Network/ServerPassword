@@ -1,5 +1,5 @@
 /* 
- *      ServerPassword - 1.17.x <> Codedesign by PT400C and Compaszer
+ *      ServerPassword - 1.18.x <> Codedesign by PT400C and Compaszer
  *      © Jomcraft-Network 2021
  */
 package net.jomcraft.serverpassword;
@@ -14,11 +14,11 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.TextComponent;
-import net.minecraftforge.fmlserverevents.FMLServerStartingEvent;
+import net.minecraftforge.event.server.ServerStartingEvent;
 
 public class CommandServerPassword {
 
-	protected static void register(FMLServerStartingEvent event) {
+	protected static void register(ServerStartingEvent event) {
 		LiteralArgumentBuilder<CommandSourceStack> literalargumentbuilder = Commands.literal("serverpassword");
 
 		literalargumentbuilder.then(Commands.literal("set").executes((command) -> {

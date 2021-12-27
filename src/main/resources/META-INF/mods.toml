@@ -1,5 +1,5 @@
 modLoader="javafml"
-loaderVersion="[37,)"
+loaderVersion="[39,)"
 license="Apache License 2.0"
 
 [[mods]] 
@@ -21,6 +21,6 @@ license="Apache License 2.0"
 [[dependencies.serverpassword]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.17,]"
+    versionRange="[1.18,]"
     ordering="NONE"
     side="BOTH"

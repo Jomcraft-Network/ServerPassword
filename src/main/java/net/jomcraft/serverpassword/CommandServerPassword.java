@@ -1,5 +1,5 @@
 /* 
- *		ServerPassword - 1.18.x <> Codedesign by PT400C and Compaszer
+ *		ServerPassword - 1.19.x <> Codedesign by PT400C and Compaszer
  *		© Jomcraft-Network 2022
  */
 package net.jomcraft.serverpassword;
@@ -13,7 +13,7 @@ import com.mojang.brigadier.tree.LiteralCommandNode;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraftforge.event.server.ServerStartingEvent;
 
 public class CommandServerPassword {
@@ -35,7 +35,7 @@ public class CommandServerPassword {
 	private static int countRange(CommandSourceStack source, String password) throws CommandSyntaxException {
 
 		if (password.isEmpty()) {
-			source.sendFailure(new TextComponent(ChatFormatting.RED + "The password can't be empty!"));
+			source.sendFailure(Component.literal(ChatFormatting.RED + "The password can't be empty!"));
 			return 0;
 		}
 
@@ -49,7 +49,7 @@ public class CommandServerPassword {
 		ConfigManager.SERVER.password.set(pw);
 		ConfigManager.SERVER.password.save();
 
-		source.sendSuccess(new TextComponent(ChatFormatting.AQUA + "The new password has been set!"), true);
+		source.sendSuccess(Component.literal(ChatFormatting.AQUA + "The new password has been set!"), true);
 
 		return 1;
 

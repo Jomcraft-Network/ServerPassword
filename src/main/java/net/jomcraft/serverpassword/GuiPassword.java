@@ -1,5 +1,5 @@
 /* 
- *		ServerPassword - 1.18.x <> Codedesign by PT400C and Compaszer
+ *		ServerPassword - 1.19.x <> Codedesign by PT400C and Compaszer
  *		© Jomcraft-Network 2022
  */
 package net.jomcraft.serverpassword;
@@ -27,8 +27,7 @@ import net.minecraft.client.multiplayer.ClientHandshakePacketListenerImpl;
 import net.minecraft.network.Connection;
 import net.minecraft.network.ConnectionProtocol;
 import net.minecraft.network.chat.CommonComponents;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.handshake.ClientIntentionPacket;
 import net.minecraft.network.protocol.login.ServerboundHelloPacket;
 import net.minecraftforge.api.distmarker.Dist;
@@ -48,7 +47,7 @@ public class GuiPassword extends Screen {
 	private Button enterButton;
 
 	public GuiPassword(Screen lastScreenIn, ConnectScreen connectingScreen, InetSocketAddress inetaddress, String ip, int port, int conn, String pw) {
-		super(new TextComponent("Select Password"));
+		super(Component.literal("Select Password"));
 		this.conn = conn;
 		this.port = port;
 		this.ip = ip;
@@ -171,7 +170,7 @@ public class GuiPassword extends Screen {
 							GuiPassword.this.connectionScreen.status = p_209549_1_;
 						}));
 						con.send(new ClientIntentionPacket(inetaddress.getHostName(), inetaddress.getPort(), ConnectionProtocol.LOGIN));
-						con.send(new ServerboundHelloPacket(minecraft.getUser().getGameProfile()));
+						con.send(new ServerboundHelloPacket(minecraft.getUser().getName(), minecraft.getProfileKeyPairManager().profilePublicKeyData()));
 
 						GuiPassword.this.connectionScreen.connection = con;
 
@@ -182,7 +181,7 @@ public class GuiPassword extends Screen {
 
 						String s = inetaddress == null ? exception.toString() : exception.toString().replaceAll(inetaddress + ":" + port, "");
 						GuiPassword.this.minecraft.execute(() -> {
-							GuiPassword.this.minecraft.setScreen(new DisconnectedScreen(GuiPassword.this.lastScreen, CommonComponents.CONNECT_FAILED, new TranslatableComponent("disconnect.genericReason", s)));
+							GuiPassword.this.minecraft.setScreen(new DisconnectedScreen(GuiPassword.this.lastScreen, CommonComponents.CONNECT_FAILED, Component.translatable("disconnect.genericReason", s)));
 						});
 					}
 
@@ -195,10 +194,10 @@ public class GuiPassword extends Screen {
 	protected void init() {
 		this.minecraft.keyboardHandler.setSendRepeatsToGui(true);
 
-		this.addRenderableWidget(this.enterButton = new Button(this.width / 2 - 100, this.height / 4 + 96 + 12, 200, 20, new TextComponent("Enter Password"), (p_213025_1_) -> {
+		this.addRenderableWidget(this.enterButton = new Button(this.width / 2 - 100, this.height / 4 + 96 + 12, 200, 20, Component.literal("Enter Password"), (p_213025_1_) -> {
 			this.onEnter(p_213025_1_);
 		}));
-		this.addRenderableWidget(new Button(this.width / 2 - 100, this.height / 4 + 120 + 12, 200, 20, new TextComponent("Cancel"), (p_213025_1_) -> {
+		this.addRenderableWidget(new Button(this.width / 2 - 100, this.height / 4 + 120 + 12, 200, 20, Component.literal("Cancel"), (p_213025_1_) -> {
 			this.minecraft.setScreen(lastScreen);
 		}));
 
@@ -207,12 +206,12 @@ public class GuiPassword extends Screen {
 			enabled = true;
 		}
 
-		keepPW = new Checkbox(this.width / 2 - 100, this.height / 4 + 70, 150, 20, new TextComponent("Store Password"), true);
+		keepPW = new Checkbox(this.width / 2 - 100, this.height / 4 + 70, 150, 20, Component.literal("Store Password"), true);
 		keepPW.selected = enabled;
 
 		keepPW.x = this.width / 2 - 100;
 		keepPW.y = this.height / 4 + 84;
-		this.ipEdit = new CustomTextFieldWidget(this.font, this.width / 2 - 100, 116, 200, 20, new TranslatableComponent("addServer.enterIp"));
+		this.ipEdit = new CustomTextFieldWidget(this.font, this.width / 2 - 100, 116, 200, 20, Component.translatable("addServer.enterIp"));
 		this.children.add(keepPW);
 		this.ipEdit.x = this.width / 2 - 100;
 		this.ipEdit.y = 116;

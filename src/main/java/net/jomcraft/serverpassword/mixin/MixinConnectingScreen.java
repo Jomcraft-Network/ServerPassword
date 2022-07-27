@@ -1,5 +1,5 @@
 /* 
- *		ServerPassword - 1.18.x <> Codedesign by PT400C and Compaszer
+ *		ServerPassword - 1.19.x <> Codedesign by PT400C and Compaszer
  *		© Jomcraft-Network 2022
  */
 package net.jomcraft.serverpassword.mixin;
@@ -30,7 +30,6 @@ import net.minecraft.network.Connection;
 import net.minecraft.network.ConnectionProtocol;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.network.protocol.handshake.ClientIntentionPacket;
 import net.minecraft.network.protocol.login.ServerboundHelloPacket;
 
@@ -60,7 +59,7 @@ public abstract class MixinConnectingScreen {
 	public Screen parent;
 
 	public String pw = null;
-	
+
 	public InetSocketAddress inetsocketaddress = null;
 
 	@Inject(at = @At("HEAD"), method = "connect(Lnet/minecraft/client/Minecraft;Lnet/minecraft/client/multiplayer/resolver/ServerAddress;)V", cancellable = true)
@@ -103,7 +102,7 @@ public abstract class MixinConnectingScreen {
 						MixinConnectingScreen.this.connection = Connection.connectToServer(inetsocketaddress, p_169265_.options.useNativeTransport());
 						MixinConnectingScreen.this.connection.setListener(new ClientHandshakePacketListenerImpl(MixinConnectingScreen.this.connection, p_169265_, MixinConnectingScreen.this.parent, MixinConnectingScreen.this::updateStatus));
 						MixinConnectingScreen.this.connection.send(new ClientIntentionPacket(inetsocketaddress.getHostName(), inetsocketaddress.getPort(), ConnectionProtocol.LOGIN));
-						MixinConnectingScreen.this.connection.send(new ServerboundHelloPacket(p_169265_.getUser().getGameProfile()));
+						MixinConnectingScreen.this.connection.send(new ServerboundHelloPacket(p_169265_.getUser().getName(), p_169265_.getProfileKeyPairManager().profilePublicKeyData()));
 					}
 				} catch (Exception exception2) {
 					if (MixinConnectingScreen.this.aborted) {
@@ -122,7 +121,7 @@ public abstract class MixinConnectingScreen {
 					MixinConnectingScreen.LOGGER.error("Couldn't connect to server", (Throwable) exception2);
 					String s = inetsocketaddress == null ? exception.getMessage() : exception.getMessage().replaceAll(inetsocketaddress.getHostName() + ":" + inetsocketaddress.getPort(), "").replaceAll(inetsocketaddress.toString(), "");
 					p_169265_.execute(() -> {
-						p_169265_.setScreen(new DisconnectedScreen(MixinConnectingScreen.this.parent, CommonComponents.CONNECT_FAILED, new TranslatableComponent("disconnect.genericReason", s)));
+						p_169265_.setScreen(new DisconnectedScreen(MixinConnectingScreen.this.parent, CommonComponents.CONNECT_FAILED, Component.translatable("disconnect.genericReason", s)));
 					});
 				}
 

@@ -13,3 +13,4 @@
 !/README.md
 !/Jenkinsfile
 !/.github/
+!/settings.gradle

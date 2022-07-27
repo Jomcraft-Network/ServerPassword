@@ -1,15 +1,15 @@
 modLoader="javafml"
-loaderVersion="[40,)"
+loaderVersion="[41,)"
 license="Apache License 2.0"
 
 [[mods]] 
 	modId="serverpassword" 
-	version="1.0.0" 
+	version="${version}" 
 	displayName="ServerPassword"
 	description='''Securely login to a minecraft server using your password!'''
 	side="SERVER"
 	authors="PT400C - Jomcraft Network"
-	credits="Developed by Jomcraft Network 2021"
+	credits="Developed by Jomcraft Network 2022"
 
 [[dependencies.serverpassword]]
     modId="forge"
@@ -21,6 +21,6 @@ license="Apache License 2.0"
 [[dependencies.serverpassword]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.18,]"
+    versionRange="[1.19,]"
     ordering="NONE"
     side="BOTH"

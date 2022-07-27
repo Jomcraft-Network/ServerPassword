@@ -1,5 +1,5 @@
 /* 
- *		ServerPassword - 1.18.x <> Codedesign by PT400C and Compaszer
+ *		ServerPassword - 1.19.x <> Codedesign by PT400C and Compaszer
  *		© Jomcraft-Network 2022
  */
 package net.jomcraft.serverpassword.mixin;
@@ -18,8 +18,6 @@ import net.jomcraft.serverpassword.ConfigManager;
 import net.jomcraft.serverpassword.ServerEvents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.players.IpBanList;
 import net.minecraft.server.players.IpBanListEntry;
@@ -63,52 +61,52 @@ public abstract class MixinPlayerList {
 		if (this.bans.isBanned(p_11258_)) {
 			ServerEvents.allowed.remove(p_11258_.getId().toString());
 			UserBanListEntry userbanlistentry = this.bans.get(p_11258_);
-			MutableComponent mutablecomponent1 = new TranslatableComponent("multiplayer.disconnect.banned.reason", userbanlistentry.getReason());
+			MutableComponent mutablecomponent1 = Component.translatable("multiplayer.disconnect.banned.reason", userbanlistentry.getReason());
 			if (userbanlistentry.getExpires() != null) {
-				mutablecomponent1.append(new TranslatableComponent("multiplayer.disconnect.banned.expiration", BAN_DATE_FORMAT.format(userbanlistentry.getExpires())));
+				mutablecomponent1.append(Component.translatable("multiplayer.disconnect.banned.expiration", BAN_DATE_FORMAT.format(userbanlistentry.getExpires())));
 			}
 
 			return mutablecomponent1;
 		} else if (!this.isWhiteListed(p_11258_)) {
 			ServerEvents.allowed.remove(p_11258_.getId().toString());
-			return new TranslatableComponent("multiplayer.disconnect.not_whitelisted");
+			return Component.translatable("multiplayer.disconnect.not_whitelisted");
 		} else if (this.ipBans.isBanned(p_11257_)) {
 			ServerEvents.allowed.remove(p_11258_.getId().toString());
 			IpBanListEntry ipbanlistentry = this.ipBans.get(p_11257_);
-			MutableComponent mutablecomponent = new TranslatableComponent("multiplayer.disconnect.banned_ip.reason", ipbanlistentry.getReason());
+			MutableComponent mutablecomponent = Component.translatable("multiplayer.disconnect.banned_ip.reason", ipbanlistentry.getReason());
 			if (ipbanlistentry.getExpires() != null) {
-				mutablecomponent.append(new TranslatableComponent("multiplayer.disconnect.banned_ip.expiration", BAN_DATE_FORMAT.format(ipbanlistentry.getExpires())));
+				mutablecomponent.append(Component.translatable("multiplayer.disconnect.banned_ip.expiration", BAN_DATE_FORMAT.format(ipbanlistentry.getExpires())));
 			}
 
 			return mutablecomponent;
 		} else if (ServerLifecycleHooks.getCurrentServer().isDedicatedServer()) {
 			if (ConfigManager.SERVER.password.get().equals("")) {
 
-				return new TextComponent("\u00A7cKicked from the server!\n\n\u00A7bThe default password has to be changed by an admin!");
+				return Component.literal("\u00A7cKicked from the server!\n\n\u00A7bThe default password has to be changed by an admin!");
 
 			} else if (!ServerEvents.allowed.contains(p_11258_.getId().toString())) {
 
 				if (ServerEvents.fast.contains(p_11257_.toString().split("/")[0])) {
 					ServerEvents.fast.remove(p_11257_.toString().split("/")[0]);
-					return new TextComponent("\u00A7cKicked from the server!\n\n\u00A7cThe request came to quickly!");
+					return Component.literal("\u00A7cKicked from the server!\n\n\u00A7cThe request came to quickly!");
 
 				} else {
 
 					if (ServerEvents.permit.contains(p_11258_.getId().toString())) {
 						ServerEvents.permit.remove(p_11258_.getId().toString());
-						return new TextComponent("\u00A7cKicked from the server!\n\n\u00A7cThe server denied your request: \nYou may not be permitted to join or entered an invalid password!");
+						return Component.literal("\u00A7cKicked from the server!\n\n\u00A7cThe server denied your request: \nYou may not be permitted to join or entered an invalid password!");
 					} else {
 
-						return new TextComponent("\u00A7cKicked from the server!\n\n\u00A7cThe server denied your request: \nYou may not be permitted to join or entered an invalid password!");
+						return Component.literal("\u00A7cKicked from the server!\n\n\u00A7cThe server denied your request: \nYou may not be permitted to join or entered an invalid password!");
 					}
 				}
 
 			} else {
 				ServerEvents.allowed.remove(p_11258_.getId().toString());
-				return this.players.size() >= this.maxPlayers && !this.canBypassPlayerLimit(p_11258_) ? new TranslatableComponent("multiplayer.disconnect.server_full") : null;
+				return this.players.size() >= this.maxPlayers && !this.canBypassPlayerLimit(p_11258_) ? Component.translatable("multiplayer.disconnect.server_full") : null;
 			}
 		} else {
-			return this.players.size() >= this.maxPlayers && !this.canBypassPlayerLimit(p_11258_) ? new TranslatableComponent("multiplayer.disconnect.server_full") : null;
+			return this.players.size() >= this.maxPlayers && !this.canBypassPlayerLimit(p_11258_) ? Component.translatable("multiplayer.disconnect.server_full") : null;
 		}
 	}
 

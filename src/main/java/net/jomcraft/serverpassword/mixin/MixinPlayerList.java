@@ -1,6 +1,6 @@
 /* 
- *      ServerPassword - 1.18.x <> Codedesign by PT400C and Compaszer
- *      © Jomcraft-Network 2021
+ *		ServerPassword - 1.18.x <> Codedesign by PT400C and Compaszer
+ *		Â© Jomcraft-Network 2022
  */
 package net.jomcraft.serverpassword.mixin;
 

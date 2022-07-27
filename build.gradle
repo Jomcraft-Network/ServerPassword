@@ -18,9 +18,9 @@ apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'org.spongepowered.mixin'
 apply plugin: 'eclipse'
 
-version = "1.18.x-1.0.2"
+version = "1.18.x-1.0.3"
 
-def fileVersion = "1.0.2"
+def fileVersion = "1.0.3"
 group = "net.jomcraft.serverpassword"
 
 archivesBaseName = "ServerPassword"
@@ -163,7 +163,6 @@ curseforge {
 		project {
 			id = '296938'
 			releaseType = 'release'
-			addGameVersion '1.18.1'
 			addGameVersion '1.18.2'
 			mainArtifact(jar) {
 				displayName = "$archivesBaseName-$version"

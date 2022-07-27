@@ -1,10 +1,10 @@
 modLoader="javafml"
-loaderVersion="[39,)"
+loaderVersion="[40,)"
 license="Apache License 2.0"
 
 [[mods]] 
 	modId="serverpassword" 
-	version="${version}" 
+	version="1.0.0" 
 	displayName="ServerPassword"
 	description='''Securely login to a minecraft server using your password!'''
 	side="SERVER"

@@ -3,7 +3,6 @@ buildscript {
         maven { url = 'https://maven.minecraftforge.net' }
         mavenCentral()
 		maven { url = 'https://repo.spongepowered.org/maven' }
-        jcenter()
     }
     dependencies {
         classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
@@ -30,7 +29,7 @@ java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 println('Java: ' + System.getProperty('java.version') + ' JVM: ' + System.getProperty('java.vm.version') + '(' + System.getProperty('java.vendor') + ') Arch: ' + System.getProperty('os.arch'))
 
 minecraft {
-    mappings channel: 'official', version: '1.18.1'
+    mappings channel: 'official', version: '1.18.2'
 
 	runs {
         client {
@@ -101,12 +100,12 @@ mixin {
 }
 
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.18.1-39.0.9'
-	annotationProcessor 'org.spongepowered:mixin:0.8.4:processor'
-	testAnnotationProcessor 'org.spongepowered:mixin:0.8.4:processor'
+    minecraft 'net.minecraftforge:forge:1.18.2-40.1.68'
+	annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
+	testAnnotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 }
 
-def forge_version = "36.2.2"
+def forge_version = "40.0.0"
 
 processResources {
 
@@ -165,6 +164,7 @@ curseforge {
 			id = '296938'
 			releaseType = 'release'
 			addGameVersion '1.18.1'
+			addGameVersion '1.18.2'
 			mainArtifact(jar) {
 				displayName = "$archivesBaseName-$version"
 			}

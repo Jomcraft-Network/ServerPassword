@@ -18,9 +18,9 @@ apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'org.spongepowered.mixin'
 apply plugin: 'eclipse'
 
-version = "1.19.x-1.0.3"
+version = "1.19.x-1.0.4"
 
-def fileVersion = "1.0.3"
+def fileVersion = "1.0.4"
 group = "net.jomcraft.serverpassword"
 
 archivesBaseName = "ServerPassword"

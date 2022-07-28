@@ -29,7 +29,7 @@ java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 println('Java: ' + System.getProperty('java.version') + ' JVM: ' + System.getProperty('java.vm.version') + '(' + System.getProperty('java.vendor') + ') Arch: ' + System.getProperty('os.arch'))
 
 minecraft {
-    mappings channel: 'official', version: '1.19'
+    mappings channel: 'official', version: '1.19.1'
 
 	runs {
         client {
@@ -100,12 +100,12 @@ mixin {
 }
 
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.19-41.1.0'
+    minecraft 'net.minecraftforge:forge:1.19.1-42.0.0'
 	annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 	testAnnotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 }
 
-def forge_version = "41.1.0"
+def forge_version = "42.0.0"
 
 processResources {
 
@@ -163,7 +163,7 @@ curseforge {
 		project {
 			id = '296938'
 			releaseType = 'release'
-			addGameVersion '1.19'
+			addGameVersion '1.19.1'
 			mainArtifact(jar) {
 				displayName = "$archivesBaseName-$version"
 			}

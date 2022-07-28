@@ -15,6 +15,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.InetSocketAddress;
 import java.util.Base64;
+import java.util.Optional;
+
 import org.apache.commons.io.IOUtils;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
@@ -170,8 +172,8 @@ public class GuiPassword extends Screen {
 							GuiPassword.this.connectionScreen.status = p_209549_1_;
 						}));
 						con.send(new ClientIntentionPacket(inetaddress.getHostName(), inetaddress.getPort(), ConnectionProtocol.LOGIN));
-						con.send(new ServerboundHelloPacket(minecraft.getUser().getName(), minecraft.getProfileKeyPairManager().profilePublicKeyData()));
-
+						con.send(new ServerboundHelloPacket(minecraft.getUser().getName(), minecraft.getProfileKeyPairManager().profilePublicKeyData(), Optional.ofNullable(minecraft.getUser().getProfileId())));
+						
 						GuiPassword.this.connectionScreen.connection = con;
 
 					} catch (Exception exception) {

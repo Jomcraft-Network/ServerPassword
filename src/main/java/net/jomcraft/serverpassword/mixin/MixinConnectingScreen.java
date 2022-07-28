@@ -102,7 +102,7 @@ public abstract class MixinConnectingScreen {
 						MixinConnectingScreen.this.connection = Connection.connectToServer(inetsocketaddress, p_169265_.options.useNativeTransport());
 						MixinConnectingScreen.this.connection.setListener(new ClientHandshakePacketListenerImpl(MixinConnectingScreen.this.connection, p_169265_, MixinConnectingScreen.this.parent, MixinConnectingScreen.this::updateStatus));
 						MixinConnectingScreen.this.connection.send(new ClientIntentionPacket(inetsocketaddress.getHostName(), inetsocketaddress.getPort(), ConnectionProtocol.LOGIN));
-						MixinConnectingScreen.this.connection.send(new ServerboundHelloPacket(p_169265_.getUser().getName(), p_169265_.getProfileKeyPairManager().profilePublicKeyData()));
+						MixinConnectingScreen.this.connection.send(new ServerboundHelloPacket(p_169265_.getUser().getName(), p_169265_.getProfileKeyPairManager().profilePublicKeyData(), Optional.ofNullable(p_169265_.getUser().getProfileId())));
 					}
 				} catch (Exception exception2) {
 					if (MixinConnectingScreen.this.aborted) {

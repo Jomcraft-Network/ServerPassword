@@ -1,4 +1,4 @@
-[![ServerPassword](https://github.com/Jomcraft-Network/ServerPassword/actions/workflows/build.yml/badge.svg?branch=1.16.x)](https://github.com/Jomcraft-Network/ServerPassword/actions/workflows/build.yml)
+[![Version](https://badgen.net/https/apiv3.jomcraft.net/product/serverpassword%3Fendpoint%3Dforge?cache=3600)](https://github.com/Jomcraft-Network/ServerPassword) [![ServerPassword](https://github.com/Jomcraft-Network/ServerPassword/actions/workflows/build.yml/badge.svg?branch=1.16.x)](https://github.com/Jomcraft-Network/ServerPassword/actions/workflows/build.yml)
 
 ### ServerPassword
 

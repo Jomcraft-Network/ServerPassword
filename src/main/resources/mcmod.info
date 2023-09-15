@@ -1,0 +1,16 @@
+[
+{
+  "modid": "serverpw",
+  "name": "ServerPassword",
+  "description": "ServerPassword mod by JomcraftNetwork",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["Compaszer, PT400C"],
+  "credits": "To the FML team and JomcraftNetwork for creating this mod",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]
